@@ -20,7 +20,7 @@ function fixChangePlural(fn) {
   };
 }
 
-function PgSimplifyInflectorPlugin(
+export function PgSimpleInflector(
   builder,
   {
     pgSimpleCollections,
@@ -506,7 +506,4 @@ function PgSimplifyInflectorPlugin(
   });
 }
 
-module.exports = PgSimplifyInflectorPlugin;
-// Hacks for TypeScript/Babel import
-module.exports.default = PgSimplifyInflectorPlugin;
-Object.defineProperty(module.exports, '__esModule', { value: true });
+export default PgSimpleInflector;
