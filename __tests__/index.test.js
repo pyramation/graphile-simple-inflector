@@ -1,10 +1,31 @@
-import fun from '../src';
-import cases from 'jest-in-case';
+import '../utils/env';
+import { GraphQLTest, env, snapshot } from 'graphile-test';
+import { IntrospectionQuery } from '../utils/queries';
+import PgSimpleInflector from '../src';
+const { SCHEMA } = env;
 
-cases(
-  'first test',
-  options => {
-    fun(options);
+const getDbString = () =>
+  `postgres://${env.PGUSER}:${env.PGPASSWORD}@${env.PGHOST}:${env.PGPORT}/${env.PGDATABASE}`;
+
+const { setup, teardown, graphQL } = GraphQLTest(
+  {
+    schema: SCHEMA,
+    appendPlugins: [PgSimpleInflector],
+    graphqlRoute: '/graphql'
   },
-  [{ name: 'strings' }, { name: 'booleans' }, { name: 'noUnderscores' }]
+  getDbString()
 );
+
+beforeAll(async () => {
+  await setup();
+});
+afterAll(async () => {
+  await teardown();
+});
+
+it('works', async () => {
+  await graphQL(async query => {
+    const data = await query(IntrospectionQuery);
+    expect(snapshot(data)).toMatchSnapshot();
+  });
+});
